@@ -1,15 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react'
 import TextEditor from '../../components/TextEditor'
 import styles from '../../style'
-import { baseURL, createInfo, updateInfo } from '../../api/axios'
+import { baseURL } from '../../api/axios'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { addInfo, editInfo } from '../../redux/feature/info'
+import {toast} from 'react-toastify'
 
-function FormArticle({successNotif,failNotif,refreshInfos}) {
+function FormArticle() {
     const state = useLocation().state
     const [title,setTitle] = useState(state?.title || '')
     const [image,setImage] = useState(null)
     const [body,setBody] = useState(state?.body || '')
     const [preview,setPreview] = useState()
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
 
     const [errMsg,setErrMsg] = useState('')
     const [errTitleMsg,setErrTitleMsg] = useState('')
@@ -30,7 +35,6 @@ function FormArticle({successNotif,failNotif,refreshInfos}) {
         setErrImageMsg('')
     },[title,image])
 
-    const navigate = useNavigate()
     const onImageUpload = (e)=>{
         const file = e.target.files[0]
         setImage(file)
@@ -48,37 +52,11 @@ function FormArticle({successNotif,failNotif,refreshInfos}) {
         }
         data.set('body',body)
         try {
-            const res = 
-            state ? updateInfo(state.id,data)
-            : createInfo(data)
-            res.then(()=>{
-                refreshInfos()
-                navigate('/')
-                successNotif()
-            }).catch(error=>{
-                failNotif()
-                if(!error?.response){
-                    setErrMsg('Server no response')
-                }else if(error?.response.status === 422){
-                    setErrTitleMsg(error?.response?.data?.title)
-                    setErrImageMsg(error?.response?.data?.image)
-                }else if(error?.response){
-                    setErrMsg(error?.response?.data?.message)
-                }else{
-                    setErrMsg('login gagal')
-                }
-            })
+            const id = state.id
+            state ? dispatch(editInfo({id,data,toast,navigate,setErrMsg,setErrTitleMsg,setErrImageMsg}))
+            : dispatch(addInfo({data,toast,navigate,setErrMsg,setErrTitleMsg,setErrImageMsg}))
         }catch(error) {
-            if(!error?.response){
-                setErrMsg('Server no response')
-            }else if(error?.response.status === 422){
-                setErrTitleMsg(error?.response?.data?.title)
-                setErrImageMsg(error?.response?.data?.image)
-            }else if(error?.response){
-                setErrMsg(error?.response?.data?.message)
-            }else{
-                setErrMsg('login gagal')
-            }
+            console.log(error)
         }
     }
 

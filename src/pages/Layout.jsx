@@ -7,7 +7,7 @@ import Notif from '../components/notif'
 
 const Sidebar = lazy(()=>import('../components/common/Sidebar'))
 
-function Layout({setting,loading,newsSearch,searchResult,setSearchResult}) {
+function Layout({setting, news, sc, setSc, loading}) {
     const location = useLocation()
     return (
         <div className="w-full bg-slate-200 overflow-hidden">
@@ -30,7 +30,7 @@ function Layout({setting,loading,newsSearch,searchResult,setSearchResult}) {
             <div className={`${styles.flexStart} mt-16`}>
                 <div className={`${styles.boxWidth} flex gap-3`}>
                 <Suspense fallback={<span>Loading...</span>}>
-                    <Sidebar setting={setting} loading={loading} newsSearch={newsSearch} searchResult={searchResult} setSearchResult={setSearchResult} />
+                    <Sidebar setting={setting} news={news} sc={sc} setSc={setSc} loading={loading} />
                     <Outlet/>
                 </Suspense>
                 </div>
@@ -43,7 +43,7 @@ function Layout({setting,loading,newsSearch,searchResult,setSearchResult}) {
             </div>
             <div className={`bg-slate-800 ${styles.paddingX} ${styles.flexCenter}`}>
                 <div className={`${styles.boxWidth}`}>
-                    <div className=' w-full p-3 font-poppins font-semibold text-sm text-center text-white'>&copy; Copyright {setting.name} 2023 | Designed by BaktiWeb</div>
+                    <div className=' w-full p-3 font-poppins font-semibold text-sm text-center text-white'>&copy; Copyright {setting?.name} 2023 | Designed by BaktiWeb</div>
                 </div>
             </div>
             <Notif/>

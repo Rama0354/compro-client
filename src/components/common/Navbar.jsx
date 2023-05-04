@@ -8,20 +8,19 @@ import styles from '../../style'
 
 function Navbar({setting,navLinks}) {
   const [toggle, setToggle] = useState(false)
-  const {currentUser,logout} = useAuth()
-
+  const {currentUser, logout} = useAuth()
+  
   const handleClose = (e) => {
       if (e.target.classList.contains("dismiss")) {
       setToggle(false);
       }
   };
-
   return (
     <nav className='w-full flex py-3 justify-between items-center navbarv'>
       <div>
-          {setting.is_logo_text === 'y' ?
-          <Link to={'/'}><img className='w-[120px]' src={baseURL+setting.logo} alt="logo" /></Link>
-          : <h2 className='font-poppins font-semibold text-[24px] text-white'><Link to={'/'}>{setting.name}</Link></h2>
+          {setting?.is_logo_text === 'y' ?
+          <Link to={'/'}><img className='w-[120px]' src={baseURL+setting?.logo} alt="logo" /></Link>
+          : <h2 className='font-poppins font-semibold text-[24px] text-white'><Link to={'/'}>{setting?.name}</Link></h2>
           }
       </div>
       <ul className='list-none sm:flex hidden justify-end items-center flex-1'>
@@ -30,8 +29,9 @@ function Navbar({setting,navLinks}) {
             <Link className='font-poppins font-normal cursor-poiner hover:bg-slate-300/25 text-white py-2 px-3 rounded-md' to={`${nav.path}`}>{nav.title}</Link>
           </li>
         ))}
-        {currentUser ? 
-          <div className='relative group'>
+        {!currentUser
+          ? <li><Link className='font-poppins font-normal cursor-poiner hover:bg-slate-300/25 text-white py-2 px-3 rounded-md' to="/login">Login</Link></li>
+          : (<div className='relative group'>
             <span className='text-white font-semibold font-poppins hover:bg-slate-300/25 py-2 px-3 rounded-lg cursor-pointer '>{currentUser?.name}</span>
             <div className='absolute z-10 invisible pointer-events-none group-hover:visible group-hover:pointer-events-auto duration-150 transition-all right-0 w-56 shadow-lg pt-4'>
               <div className='w-full flex flex-col p-3 bg-white rounded-t-lg'>
@@ -45,8 +45,7 @@ function Navbar({setting,navLinks}) {
                 <Link className='font-poppins font-normal cursor-poiner hover:bg-slate-300/25 text-white py-2 px-3 rounded-md' onClick={logout}>Logout</Link>
               </div>
             </div>
-          </div>
-          : <Link className='font-poppins font-normal cursor-poiner hover:bg-slate-300/25 text-white py-2 px-3 rounded-md' to="/login">Login</Link>
+          </div>)
         }
       </ul>
       <div className='sm:hidden flex flex-1 justify-end items-center dismiss' onClick={handleClose}>

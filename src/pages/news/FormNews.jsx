@@ -1,11 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react'
 import TextEditor from '../../components/TextEditor'
 import styles from '../../style'
-import {baseURL, createNews, updateNews} from '../../api/axios'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import {baseURL} from '../../api/axios'
+import { Link, redirect, useLocation, useNavigate } from 'react-router-dom'
 import useAuth from '../../hooks/useAuth'
+import { useDispatch } from 'react-redux'
+import { toast } from 'react-toastify'
+import { addNews, editNews } from '../../redux/feature/news'
+import Notif from '../../components/notif'
+import Cookies from 'universal-cookie'
 
-function FormNews({refreshNews,successNotif}) {
+function FormNews({init}) {
     const state = useLocation().state
     const [title,setTitle] = useState(state?.title || '')
     const [subtitle,setSubtitle] = useState(state?.subtitle || '')
@@ -19,6 +24,7 @@ function FormNews({refreshNews,successNotif}) {
     const [errSubtitleMsg,setErrSubtitleMsg] = useState('')
     const [errImageMsg,setErrImageMsg] = useState('')
 
+    const dispatch = useDispatch()
     const navigate = useNavigate()
     const {currentUser} = useAuth()
 
@@ -49,41 +55,29 @@ function FormNews({refreshNews,successNotif}) {
     }
 
     const handleSubmit = async (e)=>{
-        const data = new FormData()
-        data.set('title',title)
-        data.set('subtitle',subtitle)
-        data.set('body',body)
-        data.set('is_publish',isPublish)
-        if(state){
-            image === null ? '' : data.set('image',image)
+        const cookie = new Cookies()
+        if(!cookie || cookie.get('auth') == undefined){
+            redirect('/login') 
         }else{
-            data.set('image',image)
-        }
+            const data = new FormData()
+            data.set('title',title)
+            data.set('subtitle',subtitle)
+            data.set('body',body)
+            data.set('is_publish',isPublish)
+            if(state){
+                image === null ? '' : data.set('image',image)
+            }else{
+                data.set('image',image)
+            }
 
-        e.preventDefault()
-        try {
-            const res =
-            state ? updateNews(state.id,data)
-            : createNews(data)
-            res.then(()=>{
-                refreshNews()
-                successNotif()
-                navigate('/berita')
-            }).catch(error=>{
-                if(!error?.response){
-                    setErrMsg('Server no response')
-                }else if(error?.response?.status === 422){
-                    setErrTitleMsg(error?.response?.data?.title)
-                    setErrSubtitleMsg(error?.response?.data?.subtitle)
-                    setErrImageMsg(error?.response?.data?.image)
-                }else if(error?.response){
-                    setErrMsg(error?.response?.message)
-                }else{
-                    setErrMsg('Gagal Disimpan')
-                }
-            })
-        } catch (error) {
-            console.log(error)
+            e.preventDefault()
+            
+            const id = state?.id
+            if(state !== null){
+                dispatch(editNews({id,data,navigate,toast, setErrMsg, setErrTitleMsg, setErrSubtitleMsg, setErrImageMsg})).then(()=>init())
+            }else{
+                dispatch(addNews({data,navigate,toast, setErrMsg, setErrTitleMsg, setErrSubtitleMsg, setErrImageMsg})).then(()=>init())
+            }
         }
     }
 
@@ -154,6 +148,7 @@ function FormNews({refreshNews,successNotif}) {
                     </div>
                 </div>
             </div>
+            <Notif/>
         </div>
     )
 }

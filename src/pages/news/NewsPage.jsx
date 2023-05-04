@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
 import styles from '../../style'
 import { Link } from 'react-router-dom'
 import { SkeletonNews } from '../../components/Skeletone'
@@ -7,8 +7,7 @@ import { LazyLoadImage } from 'react-lazy-load-image-component'
 import useAuth from '../../hooks/useAuth'
 import Notif from '../../components/notif'
 
-function NewsPage({news}) {
-    const [loading,setLoading] = useState(false);
+function NewsPage({news,loading}) {
 
     const {currentUser} = useAuth()
     
@@ -30,7 +29,7 @@ function NewsPage({news}) {
                         <SkeletonNews/>
                         <SkeletonNews/>
                     </div>
-                : news.map((news,index)=>(
+                : news && news.map((news,index)=>(
                     <li key={index} className={currentUser || news.is_publish === 'y' ? 'block' : 'hidden'}>
                         <div className='flex flex-col sm:flex-row gap-6 p-3 sm:p-6'>
                             <div className='w-full sm:max-w-[280px] flex flex-shrink-0 overflow-hidden bg-slate-100'>
@@ -40,7 +39,7 @@ function NewsPage({news}) {
                                 <h3 className='font-poppins font-semibold text-lg text-green-600'>{news.title}</h3>
                                 <span className='font-poppins font-thin text-sm text-slate-400'>{`${news.author.name}, ${news.fcreated_at} ${ currentUser ? news.is_publish === 'y' ? 'Published' : 'unpublish' : '' }`}</span>
                                 <p className='font-poppins text-base text-slate-600'>{ screen.width > 768 ? news.subtitle : news.subtitle.slice(0,100)+'...'}</p>
-                                <Link to={`/berita/${news.id}`} className={`${styles.button} text-white bg-green-600 w-max flex items-center`}>Baca Lebih <img className='w-6 h-6' src={arRight} alt="btn" /></Link>
+                                <Link to={`/berita/${news.id}`} state={news} className={`${styles.button} text-white bg-green-600 w-max flex items-center`}>Baca Lebih <img className='w-6 h-6' src={arRight} alt="btn" /></Link>
                             </div>
                         </div>
                     </li>

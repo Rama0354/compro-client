@@ -1,12 +1,14 @@
 import React from 'react'
 
-const Search = ({news,setSearchResult}) => {
+const Search = ({news,setSc}) => {
     const handleSubmit = (e)=>e.preventDefault()
     const handleSearchChange = (e)=>{
-        if(!e.target.value) return setSearchResult(news)
-
-        const result = news.filter(news => news.title.toLowerCase().includes(e.target.value))
-        return setSearchResult(result)
+        if(!e.target.value){
+            return setSc(news)
+        } else{
+            const result = news.filter(news => news.title.toLowerCase().includes(e.target.value))
+            return setSc(result)
+        }
     }
     return (
         <>

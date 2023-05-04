@@ -1,5 +1,5 @@
-import styles from '../style'
-import { SkeletonAbout } from './Skeletone'
+import styles from '../../style'
+import { SkeletonAbout } from '../Skeletone'
 
 function About({setting,loading}) {
     return (
@@ -11,7 +11,7 @@ function About({setting,loading}) {
                 <>
                     <SkeletonAbout/>
                 </>
-            : <div className={`${styles.paragraph}`} dangerouslySetInnerHTML={{__html: setting.description}}></div>
+            : <div className={`${styles.paragraph}`} dangerouslySetInnerHTML={{__html: setting?.description}}></div>
             }
         </div>
     )

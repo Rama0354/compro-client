@@ -10,9 +10,9 @@ function Footer({setting, navLinks}) {
         <h2 className='w-full font-poppins font-bold text-lg text-green-600'>Kontak Kami</h2>
         </div>
         <p className='flex flex-col'>
-          <span>E-Mail : {setting.email}</span>
-          <span>Phone : {setting.phone}</span>
-          <span>Alamat : {setting.address}</span>
+          <span>E-Mail : {setting?.email}</span>
+          <span>Phone : {setting?.phone}</span>
+          <span>Alamat : {setting?.address}</span>
         </p>
       </div>
       <div className='w-full p-6'>

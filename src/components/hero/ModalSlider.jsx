@@ -1,11 +1,15 @@
 import { useState,useEffect, useRef } from "react";
-import { baseURL, createSlider, updateSlider } from "../api/axios";
-import styles from "../style";
+import { baseURL, createSlider, updateSlider } from "../../api/axios";
+import styles from "../../style";
+import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { addSlider, editSlider } from "../../redux/feature/slider";
 
-const ModalSlider = ({st,setSt,refreshSlider,successNotif,failNotif}) => {
+const ModalSlider = ({st,setSt,init}) => {
     const [title,setTitle] = useState(st.id ? st.title : '')
     const [image,setImage] = useState(null)
     const [preview, setPreview] = useState()
+    const dispatch = useDispatch()
 
     const effectRan = useRef(false)
     const errRef = useRef()
@@ -51,27 +55,9 @@ const ModalSlider = ({st,setSt,refreshSlider,successNotif,failNotif}) => {
         }
         e.preventDefault()
         try {
-            const res = st.id ? 
-            updateSlider(st.id,data)
-            : createSlider(data)
-
-            res.then(()=>{
-                refreshSlider()
-                setSt(null)
-                successNotif()
-            }).catch(error=>{
-                failNotif()
-            if(!error?.response){
-                setErrMsg('Server no response')
-                }else if(error?.response.status === 422){
-                    setErrTitleMsg(error?.response?.data?.title)
-                    setErrImageMsg(error?.response?.data?.image)
-                }else if(error?.response){
-                    setErrMsg(error?.response?.data?.message)
-                }else{
-                    setErrMsg('login gagal')
-                }
-            })
+            const id = st.id
+            st.id ? dispatch(editSlider({id,data,toast,setSt,setErrMsg,setErrTitleMsg,setErrImageMsg})).then(()=>init())
+            : dispatch(addSlider({data,toast,setSt,setErrMsg,setErrTitleMsg,setErrImageMsg})).then(()=>init())
         } catch (error) {
             console.log(error)
         }

@@ -1,11 +1,15 @@
 import { useRef, useState, useEffect } from "react";
-import {baseURL, createGallery, updateGallery} from "../../api/axios";
+import {baseURL} from "../../api/axios";
 import styles from "../../style";
+import { useDispatch } from "react-redux";
+import { addGallery, editGallery } from "../../redux/feature/gallery";
+import { toast } from 'react-toastify'
 
-const ModalGallery = ({st,setSt,reload,successNotif,failNotif}) => {
+const ModalGallery = ({st,setSt,init}) => {
     const [title,setTitle] = useState(st.id ? st.title : '')
     const [image,setImage] = useState(null)
     const [preview, setPreview] = useState()
+    const dispatch = useDispatch()
 
     const effectRan = useRef(false)
     const errRef = useRef()
@@ -43,39 +47,22 @@ const handleClick = (e) => {
 
 const handleSubmit = async (e)=>{
     const data = new FormData()
+
     data.set('title',title)
     if(st.id){
         image == null ? '' : data.set('image',image)
     }else{
         data.set('image',image)
     }
+
     e.preventDefault()
     try {
-        const res =
-        st.id ? updateGallery(st.id,data)
-        : createGallery(data)
-
-        res.then(()=>{
-            setSt(null)
-            reload(true)
-            successNotif()
-        }).catch(error=>{
-            failNotif()
-        if(!error?.response){
-            setErrMsg('Server no response')
-            }else if(error?.response.status === 422){
-                setErrTitleMsg(error?.response?.data?.title)
-                setErrImageMsg(error?.response?.data?.image)
-            }else if(error?.response){
-                setErrMsg(error?.response?.data?.message)
-            }else{
-                setErrMsg('login gagal')
-            }
-        })
+        const id = st.id
+        st.id ? dispatch(editGallery({id,data,toast,setSt,setErrMsg, setErrTitleMsg, setErrImageMsg})).then(()=>init())
+        : dispatch(addGallery({data,toast,setSt,setErrMsg, setErrTitleMsg, setErrImageMsg})).then(()=>init())
     } catch (error) {
         console.log(error)
     }
-
 }
 
 return (

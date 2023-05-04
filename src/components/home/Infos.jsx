@@ -1,14 +1,31 @@
-import React from 'react'
-import styles from '../style'
-import { baseURL, deleteInfo } from '../api/axios'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import styles from '../../style'
+import { baseURL, deleteInfo } from '../../api/axios'
 import { Link } from 'react-router-dom'
-import { addBtn,editBtn,deleteBtn } from '../assets'
-import { SkeletonInfo } from './Skeletone'
+import { addBtn,editBtn,deleteBtn } from '../../assets'
+import { SkeletonInfo } from '../Skeletone'
 import { LazyLoadImage } from 'react-lazy-load-image-component'
-import useAuth from '../hooks/useAuth'
+import useAuth from '../../hooks/useAuth'
+import { useDispatch, useSelector } from 'react-redux'
+import { getAllInfo } from '../../redux/feature/info'
 
-function Infos({infos,refreshFetch,loading,successNotif,failNotif}) {
+function Infos() {
     const {currentUser} = useAuth()
+    const {info,loading} = useSelector((state)=>({...state.info}))
+    const [infoIndex,setInfoIndex] = useState(0)
+    const dispatch = useDispatch()
+    const eff = useRef(false)
+
+    const init = useCallback(()=>{
+        dispatch(getAllInfo()).then((data)=>{
+            setInfoIndex(data.payload.length)
+        })
+    },[dispatch])
+    useEffect(()=>{
+        if(eff.current == true){
+            init()
+        } return ()=>eff.current = true
+    },[init])
 
     const handleDelete = async (e)=>{
         e.preventDefault()
@@ -27,7 +44,7 @@ function Infos({infos,refreshFetch,loading,successNotif,failNotif}) {
     }
     return (
         <div className='flex flex-col gap-6'>
-            {currentUser?.role === 'superadmin' && infos.length < 3 ?
+            {currentUser?.role === 'superadmin' && infoIndex < 3 ?
             <>
                 <div className='w-full flex justify-center p-3 border-2 border-slate-300 border-dashed'>
                     <Link to={'/info/form'} className={`${styles.buttonImg} text-white bg-purple-500 hover:bg-purple-600`} ><img className='w-8 h-8' src={`${addBtn}`} alt='button' /> <span className='mr-1 hidden sm:block'>Tambah</span></Link>
@@ -38,7 +55,7 @@ function Infos({infos,refreshFetch,loading,successNotif,failNotif}) {
             <>
                 <SkeletonInfo/>
             </>
-            : infos.map((content,index)=>(
+            : info && info.map((content,index)=>(
                 <div key={index} className='sidebar w-full flex flex-col sm:odd:flex-row sm:even:flex-row-reverse mx-auto my-0 gap-6 rounded-2xl bg-white sm:even:rounded-r-full sm:odd:rounded-l-full'>
                     <div className='p-3 shrink-0 flex justify-center'>
                         <LazyLoadImage className='w-[140px] h-[140px] xs:w-[200px] xs:h-[200px] rounded-full object-cover' src={`${baseURL + content.image}`} placeholderSrc={`${baseURL + content.thumbnail_image}`} alt="infoptb"/>

@@ -1,14 +1,28 @@
-import React, { useEffect, useRef, useState } from 'react'
-import styles from '../style'
-import { baseURL, getGallery } from '../api/axios'
-import { SkeletonImage } from './Skeletone'
-import ModalImg from './ModalImg'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import styles from '../../style'
+import { baseURL } from '../../api/axios'
+import { SkeletonImage } from '../Skeletone'
+import ModalImg from '../ModalImg'
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
+import { useDispatch, useSelector } from 'react-redux'
+import { getAllGallery } from '../../redux/feature/gallery'
 
-function Gallery({gallery,loading}) {
+function Gallery() {
+    const {image,loading} = useSelector((state)=>({...state.gallery}))
+    const setGallery = [...image].sort((a,b)=>b.id - a.id).slice(0,6)
+    const dispatch = useDispatch()
+    const eff = useRef(false)
 
-    const setGallery = gallery.sort((a,b)=>b.id - a.id).slice(0,6)
+    const init = useCallback(()=>{
+        dispatch(getAllGallery())
+    },[dispatch])
+    useEffect(()=>{
+        if(eff.current == true){
+            init()
+        }
+        return ()=>eff.current = true
+    },[init])
 
     const [clickedImg, setClickedImg] = useState(null);
     const [clickedImgThumb, setClickedImgThumb] = useState(null);
@@ -87,7 +101,7 @@ function Gallery({gallery,loading}) {
                         <SkeletonImage/>
                         <SkeletonImage/>
                     </>
-                : setGallery.map((img,index)=>(
+                : setGallery && setGallery.map((img,index)=>(
                         <LazyLoadImage
                             key={index}
                             alt="gallery"

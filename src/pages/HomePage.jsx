@@ -1,19 +1,19 @@
 import React, { lazy, Suspense } from 'react'
 import styles from '../style'
 
-const Hero = lazy(()=> import('../components/Hero'))
-const About = lazy(()=> import('../components/About'))
-const Infos = lazy(()=> import('../components/Infos'))
-const Gallery = lazy(()=> import('../components/Gallery'))
-const News = lazy(()=> import('../components/News'))
+const Hero = lazy(()=> import('../components/hero/Hero'))
+const About = lazy(()=> import('../components/home/About'))
+const Infos = lazy(()=> import('../components/home/Infos'))
+const Gallery = lazy(()=> import('../components/home/Gallery'))
+const News = lazy(()=> import('../components/home/News'))
 
-function HomePage({news, gallery, slider,refreshSlider, infos,refreshInfos, successNotif, failNotif, setting, loading}) {
+function HomePage({news, setting, loading}) {
     return (
         <>
             <div className={`${styles.flexStart} mt-16`}>
                 <div className={`${styles.boxWidth}`}>
                 <Suspense fallback={<span>Loading...</span>}>
-                    <Hero slider={slider} refreshSlider={refreshSlider} successNotif={successNotif} failNotif={failNotif}/>
+                    <Hero/>
                 </Suspense>
                 </div>
             </div>
@@ -21,8 +21,8 @@ function HomePage({news, gallery, slider,refreshSlider, infos,refreshInfos, succ
                 <div className={`${styles.boxWidth}`}>
                 <Suspense fallback={<span>Loading...</span>}>
                     <About setting={setting} loading={loading}/>
-                    <Infos infos={infos} refreshInfos={refreshInfos} loading={loading} />
-                    <Gallery gallery={gallery} loading={loading}/>
+                    <Infos/>
+                    <Gallery/>
                     <News news={news}/>
                 </Suspense>
                 </div>

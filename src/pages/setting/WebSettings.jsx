@@ -3,8 +3,11 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { api, baseURL, updateSettings } from '../../api/axios'
 import TextEditor from '../../components/TextEditor'
 import styles from '../../style'
+import { useDispatch } from 'react-redux'
+import { editSetting } from '../../redux/feature/setting'
+import {toast} from 'react-toastify'
 
-const WebSettings = ({refreshSetting,successNotif,failNotif}) => {
+const WebSettings = ({init}) => {
     const state = useLocation().state
     const [name,setName] = useState(state?.name || '')
     const [email,setEmail] = useState(state?.email || '')
@@ -52,6 +55,7 @@ const WebSettings = ({refreshSetting,successNotif,failNotif}) => {
     },[])
     
     const navigate = useNavigate()
+    const dispatch = useDispatch()
     
     const onImageUpload = (e)=>{
         const file = e.target.files[0]
@@ -80,30 +84,9 @@ const WebSettings = ({refreshSetting,successNotif,failNotif}) => {
         e.preventDefault()
 
         try {
-            updateSettings(data).then(()=>{
-                navigate('/tentang')
-                refreshSetting()
-                successNotif()
-            }).catch(error=>{
-                failNotif()
-                if(!error?.response){
-                    setErrMsg('Server no response')
-                }else if(error?.response?.status === 422){
-                    setErrNameMsg(error?.response?.data?.name)
-                    setErrEmailMsg(error?.response?.data?.email)
-                    setErrPhoneMsg(error?.response?.data?.phone)
-                    setErrAddressMsg(error?.response?.data?.address)
-                    setErrImageMsg(error?.response?.data?.image)
-                    setErrLogoMsg(error?.response?.data?.logo)
-                }else if(error?.response){
-                    setErrMsg(error?.response?.message)
-                }else{
-                    setErrMsg('Gagal Disimpan')
-                }
-            })
+            dispatch(editSetting({data,toast,init,navigate}))
         } catch (error) {
-            failNotif()
-            console.log(error.response.data)
+            console.log(error)
         }
     }
 
