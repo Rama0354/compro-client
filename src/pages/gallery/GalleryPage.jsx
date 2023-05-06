@@ -136,7 +136,9 @@ function GalleryPage() {
                                     </button>
                                 </div>
                             </div> :
-                            <LazyLoadImage effect='blur' key={index} className='h-[200px] w-full object-cover cursor-pointer' src={baseURL + img.image} placeholderSrc={baseURL + img.thumbnail_image} onClick={() => handleClick(img, index)} alt='imageGallery' />
+                            <div key={img.id} ref={lastItemRef}>
+                                <LazyLoadImage effect='blur' className='h-[200px] w-full object-cover cursor-pointer' src={baseURL + img.image} placeholderSrc={baseURL + img.thumbnail_image} onClick={() => handleClick(img, index)} alt='imageGallery' />
+                            </div>
                             
                             : currentUser?.role === 'superadmin' ?
                             <div key={img.id} className='relative group w-full min-h-[200px] flex items-center overflow-hidden'>
