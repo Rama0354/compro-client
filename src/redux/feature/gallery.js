@@ -3,9 +3,20 @@ import { createGallery, getGallery, updateGallery, deleteGallery } from "../../a
 
 export const getAllGallery = createAsyncThunk(
     'galler/getAllGallery',
-    async()=>{
+    async({page,perPage})=>{
         try {
-            const res = await getGallery()
+            const res = await getGallery(page,perPage)
+            return res
+        } catch (err) {
+            return err.response.message
+        }
+    }
+)
+export const nextGallery = createAsyncThunk(
+    'galler/nextGallery',
+    async({nextPage,perPage})=>{
+        try {
+            const res = await getGallery(nextPage,perPage)
             return res
         } catch (err) {
             return err.response.message
@@ -99,7 +110,11 @@ const gallerySlice = createSlice({
     initialState:{
         image:[],
         loading:false,
-        error:''
+        page:1,
+        nextPage:2,
+        lastpage: 0,
+        perPage:10,
+        error:'',
     },
     extraReducers: {
         [getAllGallery.pending]: (state,action)=>{
@@ -107,22 +122,37 @@ const gallerySlice = createSlice({
         },
         [getAllGallery.fulfilled]: (state,action)=>{
             state.loading = false
-            state.image = action.payload
+            state.nextPage = 2
+            state.image = action.payload.data
+            state.lastPage = action.payload.meta.last_page + 1
         },
         [getAllGallery.rejected]: (state,action)=>{
             state.loading = false
-            state.error = action.payload.message
+            state.error = action.message
+        },
+        [nextGallery.pending]: (state,action)=>{
+            state.loading = true
+        },
+        [nextGallery.fulfilled]: (state,action)=>{
+            state.loading = false
+            state.nextPage += 1
+            state.image = [...state.image,...action.payload.data]
+        },
+        [nextGallery.rejected]: (state,action)=>{
+            state.loading = false
+            state.error = action.message
         },
         [addGallery.pending]: (state,action)=>{
             state.loading = true
         },
         [addGallery.fulfilled]: (state,action)=>{
             state.loading = false
+            state.nextPage = 2
             state.image = action.payload
         },
         [addGallery.rejected]: (state,action)=>{
             state.loading = false
-            state.error = action.payload.message
+            state.error = action.message
         },
         [editGallery.pending]: (state,action)=>{
             state.loading = true
@@ -133,7 +163,7 @@ const gallerySlice = createSlice({
         },
         [editGallery.rejected]: (state,action)=>{
             state.loading = false
-            state.error = action.payload.message
+            state.error = action.message
         },
         [removeGallery.pending]: (state,action)=>{
             state.loading = true
@@ -144,7 +174,7 @@ const gallerySlice = createSlice({
         },
         [removeGallery.rejected]: (state,action)=>{
             state.loading = false
-            state.error = action.payload.message
+            state.error = action.message
         },
     }
 })

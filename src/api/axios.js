@@ -73,9 +73,9 @@ export const deleteNews = async (id)=>{
     }})
 }
 
-export const getGallery = async ()=>{
-    const res = await api.get('/v1/gallery')
-    return res.data.data
+export const getGallery = async (page,perPage)=>{
+    const res = await api.get(`/v1/gallery/?page=${page}&per_page=${perPage}`)
+    return res.data
 }
 export const createGallery = async (data)=>{
     await api.post(`/v1/gallery`,data,{headers: {

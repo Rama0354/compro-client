@@ -10,17 +10,28 @@ import useAuth from '../../hooks/useAuth'
 import Notif from '../../components/notif'
 import { toast } from 'react-toastify'
 import { useDispatch, useSelector } from 'react-redux'
-import { getAllGallery, removeGallery } from '../../redux/feature/gallery'
+import { getAllGallery, nextGallery, removeGallery } from '../../redux/feature/gallery'
 
 function GalleryPage() {
-    const {image,loading} = useSelector((state)=>({...state.gallery}))
+    const {image,page,lastPage,nextPage,perPage} = useSelector((state)=>({...state.gallery}))
     const gallery = image
     const {currentUser} = useAuth()
     const dispatch = useDispatch()
     const effRef = useRef(false)
-
+    const itemObserver = useRef()
+    const lastItemRef = useCallback(node =>{
+        if(itemObserver.current) itemObserver.current.disconnect()
+        itemObserver.current = new IntersectionObserver((entries)=>{
+            if(nextPage !== lastPage){
+                if(entries[0].isIntersecting){
+                    handleLoad()
+                }
+            }
+        })
+        if(node) itemObserver.current.observe(node)
+    },[nextPage])
     const init = useCallback(()=>{
-        dispatch(getAllGallery())
+        dispatch(getAllGallery({page,perPage}))
     },[dispatch])
     useEffect(()=>{
         if(effRef.current == true){
@@ -85,6 +96,10 @@ function GalleryPage() {
         setSt(item);
     };
 
+    const handleLoad = ()=>{
+        dispatch(nextGallery({nextPage,perPage}))
+    }
+
     const handleDelete = async (e)=>{
         try {
             const id = e.target.id
@@ -95,7 +110,7 @@ function GalleryPage() {
     }
     return (
         <>
-                <div className="w-full bg-white p-6 my-6">
+                <div id='content' className="w-full bg-white p-6 my-6">
                     <div className='relative p-3 mb-3 border-b border-slate-200 flex justify-between items-center'>
                         <h2 className={`${styles.title}`}>Galeri</h2>
                         {currentUser?.role === 'superadmin' && 
@@ -104,16 +119,27 @@ function GalleryPage() {
                             <span className='pr-1 text-sm font-poppins'>Tambah</span>
                         </button>}
                     </div>
-                    {loading ? 
-                        <article className='min-h-[608px] grid grid-cols-3 gap-1 items-start'>
-                            <SkeletonImage/>
-                            <SkeletonImage/>
-                            <SkeletonImage/>
-                        </article>
-                    : <div className='min-h-[608px] grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-3'>
+                    {<div className='min-h-[608px] grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-3'>
                         {gallery && gallery.map((img,index)=>(
+                            gallery.length === index+1 ?
                             currentUser?.role === 'superadmin' ?
-                            <div key={index} className='relative group w-full min-h-[200px] flex items-center overflow-hidden'>
+                            <div key={img.id} ref={lastItemRef} className='relative group w-full min-h-[200px] flex items-center overflow-hidden'>
+                                <img className='h-full w-full object-cover cursor-pointer' src={`${baseURL + img.image}`} onClick={() => handleClick(img, index)} alt='imageGallery' />
+                                <div className='absolute flex visible sm:invisible bottom-0 sm:-bottom-3 w-full justify-between p-6 group-hover:visible group-hover:bottom-0 bg-gradient-to-t from-slate-800 to-transparent ease-in-out duration-100'>
+                                    <button className={`${styles.buttonImg} visible sm:group-hover:visible sm:invisible bg-sky-500 hover:bg-sky-600 text-white rounded-full`}  state={img} onClick={()=>handleClickEdit(img)}>
+                                        <img className='w-8 h-8' src={`${editBtn}`} alt='btn' />
+                                        <span className='pr-1 hidden sm:block'>Edit</span>
+                                    </button>
+                                    <button className={`${styles.buttonImg} visible sm:group-hover:visible sm:invisible bg-rose-500 hover:bg-rose-600 text-white rounded-full`} onClick={handleDelete}>
+                                        <img className='w-8 h-8' src={`${deleteBtn}`} alt='btn' />
+                                        <span id={img.id} className='pr-1 hidden sm:block'>Hapus</span>
+                                    </button>
+                                </div>
+                            </div> :
+                            <LazyLoadImage effect='blur' key={index} className='h-[200px] w-full object-cover cursor-pointer' src={baseURL + img.image} placeholderSrc={baseURL + img.thumbnail_image} onClick={() => handleClick(img, index)} alt='imageGallery' />
+                            
+                            : currentUser?.role === 'superadmin' ?
+                            <div key={img.id} className='relative group w-full min-h-[200px] flex items-center overflow-hidden'>
                                 <img className='h-full w-full object-cover cursor-pointer' src={`${baseURL + img.image}`} onClick={() => handleClick(img, index)} alt='imageGallery' />
                                 <div className='absolute flex visible sm:invisible bottom-0 sm:-bottom-3 w-full justify-between p-6 group-hover:visible group-hover:bottom-0 bg-gradient-to-t from-slate-800 to-transparent ease-in-out duration-100'>
                                     <button className={`${styles.buttonImg} visible sm:group-hover:visible sm:invisible bg-sky-500 hover:bg-sky-600 text-white rounded-full`}  state={img} onClick={()=>handleClickEdit(img)}>
@@ -149,6 +175,9 @@ function GalleryPage() {
                             )}
                         </div>
                     </div>}
+                    <div className="w-full flex justify-center">
+                        {nextPage !== lastPage ? <button className='px-3 py-2 bg-sky-600 text-white font-semibold rounded-md' onClick={handleLoad}>Load More</button> : <span className='text-slate-400 text-sm'>tidak ada gambar lagi</span>}
+                    </div>
                 </div>
                 <Notif/>
         </>
