@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef } from 'react'
 import styles from '../../style'
-import { baseURL } from '../../api/axios'
 import {Link} from 'react-router-dom'
 import { SkeletonNewsCard, SkeletonNewsSmallList } from '../Skeletone'
 import { LazyLoadImage } from 'react-lazy-load-image-component'
@@ -37,7 +36,7 @@ function News() {
                     <div key={index} className='flex flex-col sm:flex-row gap-6 xs:first:row-span-4 group xs:first:flex-col'>
                         <div className='flex justify-center items-center overflow-hidden h-auto w-full sm:w-[200px] flex-shrink-0 group-first:w-full sm:group-first:w-full'>
                             <Link to={`/berita/${content.id}`}>
-                                <LazyLoadImage className='w-full h-max' placeholderSrc={baseURL+content.thumbnail_image} src={baseURL + content.image} alt="news"/>
+                                <LazyLoadImage className='w-full h-max' placeholderSrc={content.thumb_url} src={content.image_url} alt="news"/>
                             </Link>
                         </div>
                         <div>

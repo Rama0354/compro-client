@@ -75,7 +75,7 @@ return (
             </div>
             <div className="w-full p-3">
                 {st.id ?
-                    image == null ? <img src={baseURL+st.image} width={'100%'} height={100} alt="gallery"/> : <img src={preview} width={'100%'} height={100} alt="gallery"/> 
+                    image == null ? <img src={st.image_url} width={'100%'} height={100} alt="gallery"/> : <img src={preview} width={'100%'} height={100} alt="gallery"/> 
                 :
                     image == null ? "" : <img src={preview} width={'100%'} height={100} alt="gallery"/> 
                 }

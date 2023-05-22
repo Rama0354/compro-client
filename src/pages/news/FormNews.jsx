@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import TextEditor from '../../components/TextEditor'
 import styles from '../../style'
-import {baseURL} from '../../api/axios'
 import { Link, redirect, useLocation, useNavigate } from 'react-router-dom'
 import useAuth from '../../hooks/useAuth'
 import { useDispatch } from 'react-redux'
@@ -138,7 +137,7 @@ function FormNews({init}) {
                                 <div className='w-full p-3'>
                                     <p className={`${styles.paragraph}`}>Picture</p>
                                     {state ?
-                                        image == null ? <img src={baseURL+state.image} className='w-full' alt="gallery"/> : <img src={preview} className='w-full' alt="gallery"/> 
+                                        image == null ? <img src={state.image_url} className='w-full' alt="gallery"/> : <img src={preview} className='w-full' alt="gallery"/> 
                                     :
                                         image == null ? "" : <img src={preview} className='w-full' alt="gallery"/>
                                     }

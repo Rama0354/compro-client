@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
-import { baseURL } from '../../api/axios';
 import {arLeft, arRight} from '../../assets'
 import styles from '../../style';
 import { addBtn,editBtn,deleteBtn } from '../../assets';
@@ -9,6 +8,7 @@ import useAuth from '../../hooks/useAuth';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllSlider, removeSlider } from '../../redux/feature/slider';
 import { toast } from 'react-toastify';
+import { SkeletonNoSlider } from '../Skeletone';
 
 const Slider = () => {
     const {slides,loading} = useSelector((state)=>({...state.slider}))
@@ -71,8 +71,8 @@ const Slider = () => {
                     <img className='w-8 h-8' src={`${addBtn}`} alt='btn' />
                     <span className='pr-1 hidden sm:block'>Tambah</span>
                 </button>}
-                {slides && slides.map((img, imgIndex) => {
-                    const { id, image, thumbnail_image, title } = img;
+                {slides && slides.length > 0 ? slides.map((img, imgIndex) => {
+                    const { id, image_url, thumb_url, title } = img;
                     let position = "translate-x-[100%]"; //next
                     if (imgIndex === index) {
                         position = "opacity-100 translate-x-[0]"; //active
@@ -85,8 +85,8 @@ const Slider = () => {
                     }
                     return (
                         <article className={`absolute top-0 left-0 w-full h-full sm:h-[480px] opacity-0 transition-all duration-300 ease-linear ${position}`} key={id}>
-                            <div className="w-full h-full flex items-center bg-slate-300">
-                                <LazyLoadImage placeholderSrc={baseURL+thumbnail_image} effect='blur' src={baseURL+image} alt="slide" className=" w-screen h-full object-cover shadow-md" />
+                            <div className="w-full h-full flex items-end justify-center bg-slate-300">
+                                <LazyLoadImage placeholderSrc={thumb_url} effect='blur' src={image_url} alt="slide" className=" w-screen h-full object-contain shadow-md" />
                             </div>
                             <div className="w-full h-48 bg-gradient-to-t from-slate-600/50 to-transparent absolute bottom-0">
                                 <h4 className={`absolute z-0 ${currentUser?.role == 'superadmin' ? 'bottom-12' : 'bottom-3'} left-3 ${styles.heading2} text-white`}>{title}</h4>
@@ -104,7 +104,12 @@ const Slider = () => {
                             </div>
                         </article>
                     );
-                })}
+                }):(
+                    <div className='w-screen'>
+                        <SkeletonNoSlider/>
+                    </div>
+                )
+                }
                 <div>
                     {st && (
                     <ModalSlider

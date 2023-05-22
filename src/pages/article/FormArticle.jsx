@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import TextEditor from '../../components/TextEditor'
 import styles from '../../style'
-import { baseURL } from '../../api/axios'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { addInfo, editInfo } from '../../redux/feature/info'
@@ -15,6 +14,7 @@ function FormArticle() {
     const [preview,setPreview] = useState()
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    console.log(state)
 
     const [errMsg,setErrMsg] = useState('')
     const [errTitleMsg,setErrTitleMsg] = useState('')
@@ -52,8 +52,8 @@ function FormArticle() {
         }
         data.set('body',body)
         try {
-            const id = state.id
-            state ? dispatch(editInfo({id,data,toast,navigate,setErrMsg,setErrTitleMsg,setErrImageMsg}))
+            const id = state?.id
+            state !== null ? dispatch(editInfo({id,data,toast,navigate,setErrMsg,setErrTitleMsg,setErrImageMsg}))
             : dispatch(addInfo({data,toast,navigate,setErrMsg,setErrTitleMsg,setErrImageMsg}))
         }catch(error) {
             console.log(error)
@@ -99,7 +99,7 @@ function FormArticle() {
                                 <div className='w-full p-3'>
                                     <p className={`${styles.paragraph}`}>Picture</p>
                                     {state ?
-                                        image == null ? <img src={baseURL+state.image} className='w-full' alt="gallery"/> : <img src={preview} className='w-full' alt="gallery"/> 
+                                        image == null ? <img src={state.image_url} className='w-full' alt="gallery"/> : <img src={preview} className='w-full' alt="gallery"/> 
                                     :
                                         image == null ? "" : <img src={preview} className='w-full' alt="gallery"/>
                                     }

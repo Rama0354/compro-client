@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { api, baseURL, updateSettings } from '../../api/axios'
 import TextEditor from '../../components/TextEditor'
 import styles from '../../style'
 import { useDispatch } from 'react-redux'
@@ -148,7 +147,7 @@ const WebSettings = ({init}) => {
                                         <input ref={logoRef} onChange={onLogoUpload} className={`${styles.formFile} w-full`} type="file" name="logo" id="logo" />
                                         <p ref={errRef} className={errLogoMsg ? "font-poppins text-rose-600 text-sm" : "hidden"} aria-live='assertive'>{errLogoMsg}</p>
                                         {state ?
-                                            logo == null ? <img src={baseURL+state.logo} className='w-full' alt="gallery"/> : <img src={prevLogo} className='w-full' alt="gallery"/> 
+                                            logo == null ? <img src={state.logo_url} className='w-full' alt="gallery"/> : <img src={prevLogo} className='w-full' alt="gallery"/> 
                                         :
                                             logo == null ? "" : <img src={prevLogo} className='w-full' alt="gallery"/>
                                         }
@@ -158,7 +157,7 @@ const WebSettings = ({init}) => {
                                         <input ref={imageRef} onChange={onImageUpload} className={`${styles.formFile} w-full`} type="file" name="image" id="image" />
                                         <p ref={errRef} className={errImageMsg ? "font-poppins text-rose-600 text-sm" : "hidden"} aria-live='assertive'>{errImageMsg}</p>
                                         {state ?
-                                            image == null ? <img src={baseURL+state.image} className='w-full' alt="gallery"/> : <img src={prevImage} className='w-full' alt="gallery"/> 
+                                            image == null ? <img src={state.image_url} className='w-full' alt="gallery"/> : <img src={prevImage} className='w-full' alt="gallery"/> 
                                         :
                                             image == null ? "" : <img src={prevImage} className='w-full' alt="gallery"/>
                                         }

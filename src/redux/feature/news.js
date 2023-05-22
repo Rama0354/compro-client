@@ -3,9 +3,20 @@ import { getNews, createNews, updateNews, deleteNews, getNewsId, api } from "../
 
 export const getAllNews = createAsyncThunk(
     "news/getAllNews",
-    async () => {
+    async ({page,perPage}) => {
         try {
-            const res = await getNews()
+            const res = await getNews(page,perPage)
+            return res
+        } catch (err) {
+            return err.response.data
+        }
+    }
+);
+export const getNextNews = createAsyncThunk(
+    "news/getNextNews",
+    async ({nextPage,perPage}) => {
+        try {
+            const res = await getNews(nextPage,perPage)
             return res
         } catch (err) {
             return err.response.data
@@ -102,42 +113,6 @@ export const delNews = createAsyncThunk(
         }
     }
 );
-// export const getNewsById = createAsyncThunk(
-//     "news/getNewsById",
-//     async (newsId, { rejectWithValue }) => {
-//         try {
-//             const response = await api.get(`/v1/news/${newsId}`);;
-//             return response.data;
-//         } catch (err) {
-//             return rejectWithValue(err.response.data);
-//         }
-//     }
-// );
-// export const updateNews = createAsyncThunk(
-//     "news/updateNews",
-//     async ({ id, updatedNewsData, toast, navigate }, { rejectWithValue }) => {
-//         try {
-//             const response = await api.post(`/v1/news/${id}`, updatedNewsData);
-//             toast.success("News Updated Successfully");
-//             navigate("/berita");
-//             return response.data;
-//         } catch (err) {
-//             return rejectWithValue(err.response.data);
-//         }
-//     }
-// );
-// export const deleteNews = createAsyncThunk(
-//     "news/deleteNews",
-//     async ({ id, toast }, { rejectWithValue }) => {
-//         try {
-//             const response = await api.delete(`/v1/news/${id}`);
-//             toast.success("News Deleted Successfully");
-//             return response.data;
-//         } catch (err) {
-//             return rejectWithValue(err.response.data);
-//         }
-//     }
-// );
 
 const newsSlice = createSlice({
     name:'news',
@@ -145,6 +120,11 @@ const newsSlice = createSlice({
         news:[],
         newsId:[],
         loading:false,
+        page:1,
+        perPage:5,
+        nextPage:2,
+        lastPage:0,
+        totalNews:0,
         error:''
     },
     extraReducers: {
@@ -153,9 +133,26 @@ const newsSlice = createSlice({
         },
         [getAllNews.fulfilled]: (state, action) => {
             state.loading = false
-            state.news = action.payload
+            state.news = action.payload?.data
+            state.totalNews = action.payload?.meta.total
+            state.nextPage = 2
+            state.lastPage = action.payload?.meta.last_page + 1
         },
         [getAllNews.rejected]: (state, action) => {
+            state.loading = false;
+            state.error = action.payload?.message;
+        },
+
+        [getNextNews.pending]: (state, action) => {
+            state.loading = true;
+        },
+        [getNextNews.fulfilled]: (state, action) => {
+            state.loading = false
+            state.totalNews = action.payload?.meta.total
+            state.nextPage += 1
+            state.news = [...state.news,...action.payload.data]
+        },
+        [getNextNews.rejected]: (state, action) => {
             state.loading = false;
             state.error = action.payload?.message;
         },

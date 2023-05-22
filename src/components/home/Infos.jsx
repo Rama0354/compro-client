@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import styles from '../../style'
-import { baseURL, deleteInfo } from '../../api/axios'
+import { deleteInfo } from '../../api/axios'
 import { Link } from 'react-router-dom'
 import { addBtn,editBtn,deleteBtn } from '../../assets'
 import { SkeletonInfo } from '../Skeletone'
@@ -58,7 +58,7 @@ function Infos() {
             : info && info.map((content,index)=>(
                 <div key={index} className='sidebar w-full flex flex-col sm:odd:flex-row sm:even:flex-row-reverse mx-auto my-0 gap-6 rounded-2xl bg-white sm:even:rounded-r-full sm:odd:rounded-l-full'>
                     <div className='p-3 shrink-0 flex justify-center'>
-                        <LazyLoadImage className='w-[140px] h-[140px] xs:w-[200px] xs:h-[200px] rounded-full object-cover' src={`${baseURL + content.image}`} placeholderSrc={`${baseURL + content.thumbnail_image}`} alt="infoptb"/>
+                        <LazyLoadImage className='w-[140px] h-[140px] xs:w-[200px] xs:h-[200px] rounded-full object-cover' src={`${content.image_url}`} placeholderSrc={`${content.thumb_url}`} alt="infoptb"/>
                     </div>
                     <div className='w-full p-3'>
                         <div className='relative w-full py-1 px-3 border-b border-slate-200 flex justify-between items-center'>

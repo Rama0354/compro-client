@@ -113,7 +113,8 @@ const gallerySlice = createSlice({
         page:1,
         nextPage:2,
         lastpage: 0,
-        perPage:10,
+        perPage:13,
+        total:0,
         error:'',
     },
     extraReducers: {
@@ -122,6 +123,7 @@ const gallerySlice = createSlice({
         },
         [getAllGallery.fulfilled]: (state,action)=>{
             state.loading = false
+            state.total = action.payload.meta.total
             state.nextPage = 2
             state.image = action.payload.data
             state.lastPage = action.payload.meta.last_page + 1
@@ -135,6 +137,7 @@ const gallerySlice = createSlice({
         },
         [nextGallery.fulfilled]: (state,action)=>{
             state.loading = false
+            state.total = action.payload?.meta.total
             state.nextPage += 1
             state.image = [...state.image,...action.payload.data]
         },

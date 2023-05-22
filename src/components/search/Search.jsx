@@ -1,5 +1,3 @@
-import React from 'react'
-
 const Search = ({news,setSc}) => {
     const handleSubmit = (e)=>e.preventDefault()
     const handleSearchChange = (e)=>{

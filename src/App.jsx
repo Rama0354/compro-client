@@ -19,14 +19,15 @@ const FormArticle = lazy(()=>import('./pages/article/FormArticle'))
 const WebSettings = lazy(()=>import('./pages/setting/WebSettings'))
 
 function App() {
-    const {setting, news, loading} = useSelector((state)=>({...state.setting, ...state.news}))
+    const {setting, news, page, perPage, nextPage, lastPage, totalNews, loading} = useSelector((state)=>({...state.setting, ...state.news}))
     const [sc,setSc] = useState([])
     const dispatch = useDispatch()
     const effectRun = useRef(false)
+    const totalNewsRef = useRef()
 
     const init = useCallback(()=>{
         dispatch(getAllSetting())
-        dispatch(getAllNews()).then((data)=>setSc(data.payload))
+        dispatch(getAllNews({page,perPage})).then((data)=>{setSc(data.payload?.data);totalNewsRef.current = data.payload?.meta.total})
     },[dispatch])
     useEffect(()=>{
         if(effectRun.current == true){
@@ -43,7 +44,16 @@ function App() {
               setting={setting}
               loading={loading} />
             }/>
-            <Route path="/berita" element={<NewsPage news={news} loading={loading} />} />
+            <Route path="/berita" element={
+              <NewsPage news={news}
+                page={page}
+                perPage={perPage}
+                lastPage={lastPage}
+                nextPage={nextPage}
+                totalNews={totalNews} 
+                totalNewsRef={totalNewsRef} 
+                loading={loading} />
+            } />
             <Route path="/galeri" element={<GalleryPage loading={loading}/>} />
             <Route path="/tentang" element={<AboutPage setting={setting}/>} />
             <Route path="/berita/:id" element={<SingleNewsPage/>}/>

@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { baseURL } from '../../api/axios'
 
 import { menuBtn, closeBtn, settings } from '../../assets'
 import useAuth from '../../hooks/useAuth'
@@ -19,7 +18,7 @@ function Navbar({setting,navLinks}) {
     <nav className='w-full flex py-3 justify-between items-center navbarv'>
       <div>
           {setting?.is_logo_text === 'y' ?
-          <Link to={'/'}><img className='w-[120px]' src={baseURL+setting?.logo} alt="logo" /></Link>
+          <Link to={'/'}><img className='w-[120px]' src={setting?.logo_url} alt="logo" /></Link>
           : <h2 className='font-poppins font-semibold text-[24px] text-white'><Link to={'/'}>{setting?.name}</Link></h2>
           }
       </div>

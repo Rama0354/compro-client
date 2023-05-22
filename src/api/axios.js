@@ -1,10 +1,10 @@
 import axios from "axios";
 import Cookies from "universal-cookie"
-export const baseURL = 'http://localhost:8000/'
+export const baseURL = 'http://ec2-13-229-90-234.ap-southeast-1.compute.amazonaws.com/'
 const cookies = new Cookies()
 
 export const api = axios.create({
-    baseURL: 'http://localhost:8000/api'
+    baseURL: 'http://ec2-13-229-90-234.ap-southeast-1.compute.amazonaws.com/api'
 })
 
 export const getSlider = async ()=>{
@@ -47,9 +47,9 @@ export const deleteInfo = async (id)=>{
     }})
 }
 
-export const getNews = async ()=>{
-    const res = await api.get('/v1/news');
-    return res.data.data
+export const getNews = async (page,perPage)=>{
+    const res = await api.get(`/v1/news/?page=${page}&per_page=${perPage}`);
+    return res.data
 }
 export const getNewsId = async (id)=>{
     const res = await api.get(`/v1/news/${id}`);

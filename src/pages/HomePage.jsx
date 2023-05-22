@@ -10,7 +10,7 @@ const News = lazy(()=> import('../components/home/News'))
 function HomePage({news, setting, loading}) {
     return (
         <>
-            <div className={`${styles.flexStart} mt-16`}>
+            <div className={`${styles.flexStart}`}>
                 <div className={`${styles.boxWidth}`}>
                 <Suspense fallback={<span>Loading...</span>}>
                     <Hero/>

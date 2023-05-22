@@ -1,5 +1,4 @@
 import { useState,useEffect, useRef } from "react";
-import { baseURL, createSlider, updateSlider } from "../../api/axios";
 import styles from "../../style";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
@@ -73,7 +72,7 @@ const ModalSlider = ({st,setSt,init}) => {
                 </div>
                 <div className="w-full relative p-3 overflow-hidden">
                     {st.id ?
-                        image == null ? <img src={baseURL+st.image} width={'100%'} height={100} alt="gallery"/> : <img src={preview} width={'100%'} height={100} alt="gallery"/> 
+                        image == null ? <img src={st.image_url} width={'100%'} height={100} alt="gallery"/> : <img src={preview} width={'100%'} height={100} alt="gallery"/> 
                     :
                         image == null ? "" : <img src={preview} width={'100%'} height={100} alt="gallery"/> 
                     }

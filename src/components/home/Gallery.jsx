@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import styles from '../../style'
-import { baseURL } from '../../api/axios'
 import { SkeletonImage } from '../Skeletone'
 import ModalImg from '../ModalImg'
 import { LazyLoadImage } from 'react-lazy-load-image-component';
@@ -9,13 +8,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import { getAllGallery } from '../../redux/feature/gallery'
 
 function Gallery() {
-    const {image,loading} = useSelector((state)=>({...state.gallery}))
-    const setGallery = [...image].sort((a,b)=>b.id - a.id).slice(0,6)
+    const {image,loading,page,perPage} = useSelector((state)=>({...state.gallery}))
     const dispatch = useDispatch()
     const eff = useRef(false)
+    const setGallery = [...image].sort((a,b)=>b.id - a.id).slice(0,6)
 
     const init = useCallback(()=>{
-        dispatch(getAllGallery())
+        dispatch(getAllGallery({page,perPage}))
     },[dispatch])
     useEffect(()=>{
         if(eff.current == true){
@@ -31,8 +30,8 @@ function Gallery() {
 
     const handleClick = (item, index) => {
         setCurrentIndex(index);
-        setClickedImg(item.image);
-        setClickedImgThumb(item.thumbnail_image);
+        setClickedImg(item.image_url);
+        setClickedImgThumb(item.thumb_url);
         setImageTitle(item.title)
     };
 
@@ -41,8 +40,8 @@ function Gallery() {
         if (currentIndex + 1 >= totalLength) {
             setCurrentIndex(0);
             const newTitle = setGallery[0].title
-            const newUrl = setGallery[0].image;
-            const newUrlThumb = setGallery[0].thumbnail_image;
+            const newUrl = setGallery[0].image_url;
+            const newUrlThumb = setGallery[0].thumb_url;
             setImageTitle(newTitle);
             setClickedImg(newUrl);
             setClickedImgThumb(newUrlThumb);
@@ -52,8 +51,8 @@ function Gallery() {
         const newUrl = setGallery.filter((item) => {
             return setGallery.indexOf(item) === newIndex;
         });
-        const newItem = newUrl[0].image;
-        const newItemThumb = newUrl[0].thumbnail_image;
+        const newItem = newUrl[0].image_url;
+        const newItemThumb = newUrl[0].thumb_url;
         const newTitle = newUrl[0].title;
         setImageTitle(newTitle)
         setClickedImg(newItem);
@@ -66,8 +65,8 @@ function Gallery() {
         if (currentIndex === 0) {
             setCurrentIndex(totalLength - 1);
             const newTitle = setGallery[totalLength - 1].title;
-            const newUrl = setGallery[totalLength - 1].image;
-            const newUrlThumb = setGallery[totalLength - 1].thumbnail_image;
+            const newUrl = setGallery[totalLength - 1].image_url;
+            const newUrlThumb = setGallery[totalLength - 1].thumb_url;
             setImageTitle(newTitle);
             setClickedImg(newUrl);
             setClickedImgThumb(newUrlThumb);
@@ -77,8 +76,8 @@ function Gallery() {
         const newUrl = setGallery.filter((item) => {
             return setGallery.indexOf(item) === newIndex;
         });
-        const newItem = newUrl[0].image;
-        const newItemThumb = newUrl[0].thumbnail_image;
+        const newItem = newUrl[0].image_url;
+        const newItemThumb = newUrl[0].thumb_url;
         const newTitle = newUrl[0].title;
         setClickedImg(newItem);
         setClickedImgThumb(newItemThumb);
@@ -103,11 +102,11 @@ function Gallery() {
                     </>
                 : setGallery && setGallery.map((img,index)=>(
                         <LazyLoadImage
-                            key={index}
+                            key={img.id}
                             alt="gallery"
                             effect="blur"
-                            src={baseURL+img.image}
-                            placeholderSrc={baseURL+img.thumbnail_image}
+                            src={img.image_url}
+                            placeholderSrc={img.thumb_url}
                             onClick={() => handleClick(img, index)}
                             className="cursor-pointer bg-slate-100 w-full h-full object-cover"
                         />
